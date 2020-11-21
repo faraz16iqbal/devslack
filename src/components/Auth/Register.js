@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import firebase from "../../firebase";
+import md5 from "md5";
 import {
   Grid,
   Form,
@@ -18,6 +19,9 @@ class Register extends Component {
     email: "",
     password: "",
     passwordConfirmation: "",
+    errors: [],
+    loading: false,
+    usersRef: firebase.database().ref("users"),
   };
 
   isFormValid = () => {
@@ -33,14 +37,6 @@ class Register extends Component {
     } else return true;
   };
 
-  isPasswordValid = ({ passwordConfirmation, password }) => {
-    if (password.length < 6 || passwordConfirmation.length < 6) {
-      return false;
-    } else if (passwordConfirmation !== password) {
-      return false;
-    } else return true;
-  };
-
   isFormEmpty = ({ username, email, passwordConfirmation, password }) => {
     return (
       !username.length ||
@@ -50,13 +46,25 @@ class Register extends Component {
     );
   };
 
+  isPasswordValid = ({ passwordConfirmation, password }) => {
+    if (password.length < 6 || passwordConfirmation.length < 6) {
+      return false;
+    } else if (passwordConfirmation !== password) {
+      return false;
+    } else return true;
+  };
+
+  displayErrors = (errors) =>
+    errors.map((error, i) => <p key={i}> {error.Message}</p>);
+
   handleChange = (event) => {
     this.setState({ [event.target.name]: event.target.value });
   };
 
   handleSubmit = (event) => {
-    if (this.isFormValid) {
-      event.preventDefault();
+    event.preventDefault();
+    if (this.isFormValid()) {
+      this.setState({ errors: [], loading: true });
       firebase
         .auth()
         .createUserAndRetrieveDataWithEmailAndPassword(
@@ -65,20 +73,58 @@ class Register extends Component {
         )
         .then((createdUser) => {
           console.log(createdUser);
+          createdUser.user
+            .updateProfile({
+              displayName: this.state.username,
+              photoURL: `http://gravatar.com/avatar/${md5(
+                createdUser.user.email
+              )}?d=identicon`,
+            })
+            .then(() => {
+              this.saveUser(createdUser).then(() => {
+                console.log("user saved");
+              });
+              this.setState({ loading: false });
+            })
+            .catch((err) => {
+              console.log(err);
+              this.setState({
+                errors: this.state.errors.concat(err),
+                loading: false,
+              });
+            });
+          //   this.setState({ loading: false });
         })
         .catch((err) => {
           console.log(err);
+          this.setState({
+            loading: false,
+            errors: this.state.errors.concat(err),
+          });
         });
     }
   };
 
+  saveUser = (createdUser) => {
+    return this.state.usersRef.child(createdUser.user.uid).set({
+      name: createdUser.user.displayName,
+      avatar: createdUser.user.photoURL,
+    });
+  };
+
   render() {
-    const { username, email, passwordConfirmation, password } = this.state;
+    const {
+      username,
+      email,
+      passwordConfirmation,
+      password,
+      loading,
+    } = this.state;
 
     return (
       <Grid textAlign="center" verticalAlign="middle" className="app">
         <Grid.Column style={{ maxWidth: 450 }}>
-          <Header as="h2" icon color="orange" textAlign="center">
+          <Header as="h1" icon color="orange" textAlign="center">
             <Icon name="puzzle piece" />
             Register for DevChat
           </Header>
@@ -124,11 +170,23 @@ class Register extends Component {
                 value={passwordConfirmation}
                 onChange={this.handleChange}
               />
-              <Button color="orange" fluid size="large">
+              <Button
+                disabled={loading}
+                color="orange"
+                fluid
+                size="large"
+                className={loading ? "loading" : ""}
+              >
                 Submit
               </Button>
             </Segment>
           </Form>
+          {this.state.errors.length > 0 && (
+            <Message error>
+              <h3>Error</h3>
+              {this.displayErrors(this.state.errors)}
+            </Message>
+          )}
           <Message>
             Already a user? <Link to="/login">Login</Link>
           </Message>
