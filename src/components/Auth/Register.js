@@ -21,7 +21,7 @@ class Register extends Component {
     passwordConfirmation: "",
     errors: [],
     loading: false,
-    usersRef: firebase.database().ref("users"),
+    usersRef: firebase.database().ref("users"), //reference
   };
 
   isFormValid = () => {
