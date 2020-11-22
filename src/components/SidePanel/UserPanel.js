@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import firebase from "../../firebase";
-import { connect } from "react-redux";
 import { Grid, Header, Icon, Dropdown, Image } from "semantic-ui-react";
 
 class UserPanel extends Component {
@@ -54,10 +53,10 @@ class UserPanel extends Component {
               <Header.Content>DevChat</Header.Content>
             </Header>
           </Grid.Row>
-          <Header style={{ padding: "0.25em " }} as="h4">
+          <Header style={{ padding: "0.25rem " }} as="h4">
             <Dropdown
               trigger={
-                <span>
+                <span style={{ color: "#eee" }}>
                   <Image src={user.photoURL} spaced="right" avatar />
                   {user.displayName}
                 </span>
@@ -70,8 +69,5 @@ class UserPanel extends Component {
     );
   }
 }
-const mapStateToProps = (state) => ({
-  currentUser: state.user.currentUser,
-});
 
-export default connect(mapStateToProps)(UserPanel);
+export default UserPanel;
