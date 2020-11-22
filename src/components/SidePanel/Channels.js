@@ -6,6 +6,7 @@ import { Menu, Icon, Modal, Form, Input, Button } from "semantic-ui-react";
 
 class Channels extends Component {
   state = {
+    activeChannel: "",
     user: this.props.currentUser,
     channels: [],
     channelName: "",
@@ -24,7 +25,6 @@ class Channels extends Component {
     this.state.channelsRef.on("child_added", (snap) => {
       loadedChannels.push(snap.val());
       this.setState({ channels: loadedChannels }, () => this.setFirstChannel());
-      //   console.log(loadedChannels);
     });
   };
 
@@ -33,8 +33,8 @@ class Channels extends Component {
     console.log(firstChannel, this.state.firstLoad);
 
     if (this.state.firstLoad && this.state.channels.length > 0) {
-      //   console.log("setting");
       this.changeChannel(firstChannel);
+      this.setActiveChannel(firstChannel);
     }
     this.setState({ firstLoad: false });
   };
@@ -86,13 +86,19 @@ class Channels extends Component {
         onClick={() => this.changeChannel(channel)}
         name={channel.name}
         style={{ opacity: "0.7" }}
+        active={channel.id === this.state.activeChannel}
       >
         # {channel.name}{" "}
       </Menu.Item>
     ));
 
   changeChannel = (channel) => {
+    this.setActiveChannel(channel);
     this.props.setCurrentChannel(channel);
+  };
+
+  setActiveChannel = (channel) => {
+    this.setState({ activeChannel: channel.id });
   };
 
   handleChange = (event) => {
