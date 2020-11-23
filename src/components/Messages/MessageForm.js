@@ -22,7 +22,7 @@ class MessageForm extends Component {
       user: {
         id: this.state.user.uid,
         name: this.state.user.displayName,
-        avatar: this.state.user.avatar,
+        avatar: this.state.user.photoURL,
       },
       content: this.state.message,
     };
@@ -44,7 +44,7 @@ class MessageForm extends Component {
         .push()
         .set(this.createMessage())
         .then(() => {
-          this.setState({ loading: false, message: "" });
+          this.setState({ loading: false, message: "", errors: [] });
         })
         .catch((err) => {
           console.log(err);
@@ -53,10 +53,15 @@ class MessageForm extends Component {
             loading: false,
           });
         });
+    } else {
+      this.setState({
+        errors: this.state.errors.concat({ message: "Please add a message!" }),
+      });
     }
   };
 
   render() {
+    const { errors } = this.state;
     return (
       <Segment className="message__form">
         <Input
@@ -66,6 +71,7 @@ class MessageForm extends Component {
           style={{ marginBottom: "0.7em" }}
           label={<Button icon="add" />}
           labelPosition="left"
+          className={errors.some((error) => error.message) ? "error" : ""}
           placeholder="Write your message"
         />
 

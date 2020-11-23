@@ -15,7 +15,7 @@ class Messages extends Component {
     // console.log(channel);
     return (
       <React.Fragment>
-        <MessagesHeader />
+        <MessagesHeader messagesRef={messagesRef} />
 
         <Segment>
           <Comment.Group className="messages">{/* Messages */}</Comment.Group>
