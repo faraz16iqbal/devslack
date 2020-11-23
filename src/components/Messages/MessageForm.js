@@ -1,0 +1,92 @@
+import React, { Component } from "react";
+import firebase from "../../firebase";
+import { Segment, Button, Input, ButtonGroup } from "semantic-ui-react";
+
+class MessageForm extends Component {
+  state = {
+    errors: [],
+    message: "",
+    channel: this.props.currentChannel,
+    user: this.props.currentUser,
+    loading: false,
+  };
+
+  handleChange = (e) => {
+    // prompt("Typed");
+    this.setState({ [e.target.name]: e.target.value });
+  };
+
+  createMessage = () => {
+    const message = {
+      timestamp: firebase.database.ServerValue.TIMESTAMP,
+      user: {
+        id: this.state.user.uid,
+        name: this.state.user.displayName,
+        avatar: this.state.user.avatar,
+      },
+      content: this.state.message,
+    };
+    console.log(message);
+
+    return message;
+  };
+
+  sendMessage = () => {
+    const { messagesRef } = this.props;
+    const { message, channel } = this.state;
+    // console.log(messagesRef);
+    // console.log(channel);
+
+    if (message) {
+      this.setState({ loading: true });
+      messagesRef
+        .child(channel.id)
+        .push()
+        .set(this.createMessage())
+        .then(() => {
+          this.setState({ loading: false, message: "" });
+        })
+        .catch((err) => {
+          console.log(err);
+          this.setState({
+            errors: this.state.errors.concat(err),
+            loading: false,
+          });
+        });
+    }
+  };
+
+  render() {
+    return (
+      <Segment className="message__form">
+        <Input
+          fluid
+          name="message"
+          onChange={this.handleChange}
+          style={{ marginBottom: "0.7em" }}
+          label={<Button icon="add" />}
+          labelPosition="left"
+          placeholder="Write your message"
+        />
+
+        <ButtonGroup icon widths="2">
+          <Button
+            onClick={this.sendMessage}
+            color="orange"
+            content="Add Reply"
+            labelPosition="left"
+            icon="edit"
+          />
+          <Button
+            color="teal"
+            content="Upload Media"
+            labelPosition="right"
+            icon="cloud upload"
+          />
+        </ButtonGroup>
+      </Segment>
+    );
+  }
+}
+
+export default MessageForm;

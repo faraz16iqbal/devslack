@@ -23,6 +23,7 @@ class Channels extends Component {
   addListeners = () => {
     let loadedChannels = [];
     this.state.channelsRef.on("child_added", (snap) => {
+      // console.log(snap);
       loadedChannels.push(snap.val());
       this.setState({ channels: loadedChannels }, () => this.setFirstChannel());
     });

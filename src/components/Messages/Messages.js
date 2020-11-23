@@ -1,9 +1,18 @@
 import React, { Component } from "react";
+import firebase from "../../firebase";
 import MessagesHeader from "./MessagesHeader";
+import MessageForm from "./MessageForm";
 import { Segment, Comment } from "semantic-ui-react";
 
 class Messages extends Component {
+  state = {
+    messagesRef: firebase.database().ref("messages"),
+    channel: this.props.currentChannel,
+    user: this.props.currentUser,
+  };
   render() {
+    const { messagesRef, channel, user } = this.state;
+    // console.log(channel);
     return (
       <React.Fragment>
         <MessagesHeader />
@@ -11,7 +20,11 @@ class Messages extends Component {
         <Segment>
           <Comment.Group className="messages">{/* Messages */}</Comment.Group>
         </Segment>
-        {/* <MessageForm /> */}
+        <MessageForm
+          messagesRef={messagesRef}
+          currentChannel={channel}
+          currentUser={user}
+        />
       </React.Fragment>
     );
   }
