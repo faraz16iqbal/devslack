@@ -126,7 +126,7 @@ class Register extends Component {
         <Grid.Column style={{ maxWidth: 450 }}>
           <Header as="h1" icon color="orange" textAlign="center">
             <Icon name="puzzle piece" />
-            Register for DevChat
+            Register for DevSlack
           </Header>
           <Form size="large" onSubmit={this.handleSubmit}>
             <Segment stacked>

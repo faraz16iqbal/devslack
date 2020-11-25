@@ -31,7 +31,7 @@ class Channels extends Component {
 
   setFirstChannel = () => {
     const firstChannel = this.state.channels[0];
-    console.log(firstChannel, this.state.firstLoad);
+    // console.log(firstChannel, this.state.firstLoad);
 
     if (this.state.firstLoad && this.state.channels.length > 0) {
       this.changeChannel(firstChannel);

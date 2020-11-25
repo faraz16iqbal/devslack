@@ -50,7 +50,7 @@ class UserPanel extends Component {
             {/* App Header */}
             <Header inverted float="left" as="h2">
               <Icon name="code" />
-              <Header.Content>DevChat</Header.Content>
+              <Header.Content>DevSlack</Header.Content>
             </Header>
           </Grid.Row>
           <Header style={{ padding: "0.25rem" }} as="h4">

@@ -34,18 +34,15 @@ class Messages extends Component {
     });
   };
 
-  displayMessages = (messages) => {
-    console.log(messages.length);
-
+  displayMessages = (messages) =>
     messages.length > 0 &&
-      messages.map((message) => (
-        <Message
-          key={message.timestamp}
-          message={message}
-          user={this.state.user}
-        />
-      ));
-  };
+    messages.map((message) => (
+      <Message
+        key={message.timestamp}
+        message={message}
+        user={this.state.user}
+      />
+    ));
 
   render() {
     const { messagesRef, messages, channel, user } = this.state;
@@ -57,6 +54,7 @@ class Messages extends Component {
         <Segment>
           <Comment.Group className="messages">
             {this.displayMessages(messages)}
+            {/* <h1>Hello</h1> */}
           </Comment.Group>
         </Segment>
         <MessageForm
