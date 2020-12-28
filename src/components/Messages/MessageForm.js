@@ -8,6 +8,7 @@ import ProgressBar from "./ProgressBar";
 
 class MessageForm extends Component {
   state = {
+    isPrivateChannel: this.props.isPrivateChannel,
     storageRef: firebase.storage().ref(),
     uploadState: "",
     uploadTask: null,
@@ -52,13 +53,14 @@ class MessageForm extends Component {
   };
 
   sendMessage = () => {
-    const { message, channel, messagesRef } = this.state;
+    const { getMessagesRef } = this.props;
+    const { message, channel } = this.state;
     // console.log(messagesRef);
     // console.log(channel);
 
     if (message) {
       this.setState({ loading: true });
-      messagesRef
+      getMessagesRef()
         .child(channel.id)
         .push()
         .set(this.createMessage())
@@ -79,11 +81,19 @@ class MessageForm extends Component {
     }
   };
 
+  getPath = () => {
+    if (this.props.isPrivateChannel) {
+      return `chat/private-${this.state.channel.id}`;
+    } else {
+      return `chat/public`;
+    }
+  };
+
   uploadFile = (file, metadata) => {
     // console.log(file, metadata);
     const pathToUpload = this.state.channel.id;
-    const ref = this.props.messagesRef;
-    const filePath = `chat/public/${uuid()}.jpg`;
+    const ref = this.props.getMessagesRef();
+    const filePath = `${this.getPath()}/${uuid()}.jpg`;
     this.setState(
       {
         uploadState: "uploading",

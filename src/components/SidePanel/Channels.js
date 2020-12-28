@@ -1,17 +1,20 @@
 import React, { Component } from "react";
 import firebase from "../../firebase";
 import { connect } from "react-redux";
-import { setCurrentChannel } from "../../actions/index";
+import { setCurrentChannel, setPrivateChannel } from "../../actions/index";
 import { Menu, Icon, Modal, Form, Input, Button } from "semantic-ui-react";
 
 class Channels extends Component {
   state = {
     activeChannel: "",
     user: this.props.currentUser,
+    channel: null,
     channels: [],
     channelName: "",
     channelDetails: "",
     channelsRef: firebase.database().ref("channels"),
+    messagesRef: firebase.database().ref("messages"),
+    notifications: [],
     model: false,
     firstLoad: true,
   };
@@ -26,8 +29,22 @@ class Channels extends Component {
       // console.log(snap);
       loadedChannels.push(snap.val());
       this.setState({ channels: loadedChannels }, () => this.setFirstChannel());
+      // this.addNotificationListener(snap.key);
     });
   };
+
+  // addNotificationListener = (channelId) => {
+  //   this.state.messagesRef.child(channelId).on("value", (snap) => {
+  //     if (this.state.channel) {
+  //       this.handleNotifications(
+  //         channelId,
+  //         this.state.channel.id,
+  //         this.state.notifications,
+  //         snap
+  //       );
+  //     }
+  //   });
+  // };
 
   setFirstChannel = () => {
     const firstChannel = this.state.channels[0];
@@ -96,6 +113,8 @@ class Channels extends Component {
   changeChannel = (channel) => {
     this.setActiveChannel(channel);
     this.props.setCurrentChannel(channel);
+    this.props.setPrivateChannel(false);
+    this.setState({ channel });
   };
 
   setActiveChannel = (channel) => {
@@ -168,4 +187,6 @@ class Channels extends Component {
   }
 }
 
-export default connect(null, { setCurrentChannel })(Channels);
+export default connect(null, { setCurrentChannel, setPrivateChannel })(
+  Channels
+);
